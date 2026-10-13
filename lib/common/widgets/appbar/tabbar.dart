@@ -1,0 +1,26 @@
+  import 'package:flutter/cupertino.dart';
+import 'package:flutter/material.dart';
+
+import '../../../utils/constants/colors.dart';
+import '../../../utils/device/device_utility.dart';
+import '../../../utils/helpers/helper_functions.dart';
+
+class TTabBar extends StatelessWidget implements PreferredSizeWidget{
+  const TTabBar({super.key, required this.tabs});
+ final List<Widget> tabs;
+  @override
+  Widget build(BuildContext context) {
+    final bool isDark = HelperFunctions.isDarkMode(context);
+    return TabBar(
+        tabs: tabs,
+        isScrollable: true,
+        indicatorColor: AppColors.primary,
+        labelColor: isDark ? Colors.black : Colors.white,
+        unselectedLabelColor: AppColors.primary,
+
+    );
+  }
+
+  @override
+  Size get preferredSize => Size.fromHeight(TDeviceUtils.getAppBarHeight());
+}

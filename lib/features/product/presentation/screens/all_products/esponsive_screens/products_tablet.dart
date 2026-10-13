@@ -1,0 +1,87 @@
+import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:go_router/go_router.dart';
+import '../../../../../../common/abstraction/base_data_table/base_data_table_state.dart';
+import '../../../../../../common/widgets/custom_shapes/containers/rounded_container.dart';
+import '../../../../../../utils/constants/sizes.dart';
+import '../../../../../categories/presentation/screens/all_categories/widgets/table_header.dart';
+import '../../../../domain/entities/product_entity.dart';
+import '../../../controller/product_attributes/product_attributes_cubit.dart';
+import '../../../controller/product_cubit.dart';
+import '../../../controller/product_image/product_image_cubit.dart';
+import '../../../controller/product_variations/prduct_cariations_cubit.dart';
+import '../table/data-table.dart';
+
+class ProductsTabletScreen extends StatefulWidget {
+  const ProductsTabletScreen({super.key});
+
+  @override
+  State<ProductsTabletScreen> createState() => _ProductsTabletScreenState();
+}
+
+class _ProductsTabletScreenState extends State<ProductsTabletScreen> {
+  late final TextEditingController searchController;
+  @override
+  void initState() {
+    searchController = TextEditingController();
+    super.initState();
+  }
+  @override
+  void dispose() {
+    searchController.dispose();
+    super.dispose();
+  }
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+      body: SingleChildScrollView(
+        child: Padding(
+          padding: const EdgeInsets.all(Sizes.defaultSpace),
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              // Breadcrumbs
+              Text(
+                'Products',
+                style: Theme.of(context).textTheme.headlineLarge,
+              ),
+              const SizedBox(height: Sizes.spaceBtwSections / 2),
+
+              RoundedContainer(
+                child: Column(
+                  children: [
+                    TableHeader(
+                      buttonText: 'Add Product',
+                      onPressed: () => context.push(
+                        '/products/create-product',
+                        extra: {
+                          'product': context.read<ProductCubit>(),
+                          'images': context.read<ProductImagesCubit>(),
+                          'variations': context.read<ProductVariationsCubit>(),
+                          'attributes': context.read<ProductAttributesCubit>(),
+                        },
+                      ),                    ),
+                    const SizedBox(height: Sizes.spaceBtwItems),
+
+                    BlocBuilder<ProductCubit, BaseDataTableState<ProductEntity>>(
+                      builder: (context, state) {
+                        if (state.status == DataTableStatus.loading) {
+                          return const Center(
+                            child: CircularProgressIndicator(
+                              color: Colors.blue,
+                            ),
+                          );
+                        }
+                       return const ProductsTable();
+                      },
+                    ),
+                  ],
+                ), // Column
+              ), // RoundedContainer
+            ],
+          ), // Column
+        ), // Padding
+      ), // SingleChildScrollView
+    ); // Scaffold
+  }
+}
